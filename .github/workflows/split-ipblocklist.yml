@@ -1,32 +1,32 @@
 name: Feezony Split IP Blocklist
 
 on:
-  push:  # รันเมื่อ push code
-  schedule:  # รันอัตโนมัติทุกวันตอนเที่ยงคืน UTC
-    - cron: '0 * * * *'   # ทำงานทุกชั่วโมง (ที่นาที 0)
-  workflow_dispatch:   ## สามารถรันด้วยมือได้
+  push:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 jobs:
   split-and-push:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
     - name: Download and split
       run: |
         curl -o inbound.txt https://raw.githubusercontent.com/bitwire-it/ipblocklist/refs/heads/main/inbound.txt
         split -l 100000 --numeric-suffixes=1 inbound.txt inbound_part_
-        # เปลี่ยนชื่อไฟล์ให้เป็นรูปแบบ 0001, 0002, ...
         for file in inbound_part_*; do
-          # ดึงเลข suffix และแปลงเป็น 4 หลัก
           suffix=$(echo $file | grep -o '[0-9]\+$')
           new_suffix=$(printf "%04d" $suffix)
-          mv "$file" "inbound_part_$new_suffix"
+          mv "$file" "inbound_part_$new_suffix.txt"
         done
         rm inbound.txt
+
     - name: Commit changes
       run: |
         git config --global user.name "GitHub Action"
         git config --global user.email "action@github.com"
-        git add inbound_part_*
+        git add inbound_part_*.txt
         git commit -m "Split IP blocklist with numeric suffixes" || echo "No changes"
         git push
