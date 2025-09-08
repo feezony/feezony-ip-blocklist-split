@@ -3,7 +3,7 @@ name: Feezony Split IP Blocklist
 on:
   push:  # รันเมื่อ push code
   schedule:  # รันอัตโนมัติทุกวันตอนเที่ยงคืน UTC
-    - cron: '0 0 * * *'
+    - cron: '0 * * * *'
 
 jobs:
   split:
