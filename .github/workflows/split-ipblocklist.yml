@@ -5,6 +5,7 @@ on:
     - cron: "0 0 * * *"   # รันทุกวันเที่ยงคืน UTC
   workflow_dispatch:       # เผื่อกดรันเองได้
 
+# แสดงชื่อ run ให้เข้าใจง่ายใน Actions UI
 run-name: "Split IP Blocklist run by ${{ github.actor }} (#${{ github.run_number }})"
 
 jobs:
@@ -28,18 +29,25 @@ jobs:
         run: |
           i=1
           mkdir -p data/blocklist
-          rm -f data/blocklist/*.txt   # ลบไฟล์เก่าก่อน (ป้องกันซ้ำ)
+          rm -f data/blocklist/*.txt   # ลบไฟล์เก่าออกก่อน
           for f in output/part_*; do
             mv "$f" "data/blocklist/blocklist_$i.txt"
             i=$((i+1))
           done
-          ls -lh data/blocklist/
+          echo "Created $(ls -1 data/blocklist | wc -l) blocklist files"
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+
           git add data/blocklist/*.txt
-          COMMIT_MSG="Update blocklist on $(date +'%Y-%m-%d %H:%M:%S UTC')"
-          git commit -m "$COMMIT_MSG" || echo "No changes to commit"
-          git push
+
+          # ถ้ามีไฟล์เปลี่ยนจริง ค่อย commit/push
+          if ! git diff --cached --quiet; then
+            COMMIT_MSG="Update blocklist on $(date +'%Y-%m-%d %H:%M:%S UTC')"
+            git commit -m "$COMMIT_MSG"
+            git push
+          else
+            echo "No changes detected, skipping commit."
+          fi
