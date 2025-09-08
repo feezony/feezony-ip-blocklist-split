@@ -5,6 +5,8 @@ on:
     - cron: "0 0 * * *"   # รันทุกวันเที่ยงคืน UTC
   workflow_dispatch:       # เผื่อกดรันเองได้
 
+run-name: "Split IP Blocklist run by ${{ github.actor }} (#${{ github.run_number }})"
+
 jobs:
   split:
     runs-on: ubuntu-latest
@@ -21,25 +23,23 @@ jobs:
         run: |
           mkdir -p output
           split -l 100000 inbound.txt output/part_
-          ls -lh output/
 
       - name: Rename files with extension
         run: |
           i=1
+          mkdir -p data/blocklist
+          rm -f data/blocklist/*.txt   # ลบไฟล์เก่าก่อน (ป้องกันซ้ำ)
           for f in output/part_*; do
-            mv "$f" "output/blocklist_$i.txt"
+            mv "$f" "data/blocklist/blocklist_$i.txt"
             i=$((i+1))
           done
-          ls -lh output/
+          ls -lh data/blocklist/
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          cp output/*.txt .
-          git add blocklist_*.txt
-
-          # ใช้ timestamp เป็น commit message
+          git add data/blocklist/*.txt
           COMMIT_MSG="Update blocklist on $(date +'%Y-%m-%d %H:%M:%S UTC')"
           git commit -m "$COMMIT_MSG" || echo "No changes to commit"
           git push
