@@ -38,5 +38,8 @@ jobs:
           git config user.email "github-actions@github.com"
           cp output/*.txt .
           git add blocklist_*.txt
-          git commit -m "Update blocklist (split into 100k lines per file)"
+
+          # ใช้ timestamp เป็น commit message
+          COMMIT_MSG="Update blocklist on $(date +'%Y-%m-%d %H:%M:%S UTC')"
+          git commit -m "$COMMIT_MSG" || echo "No changes to commit"
           git push
