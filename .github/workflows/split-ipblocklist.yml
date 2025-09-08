@@ -5,7 +5,10 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * *' # ทำงานทุกวันตอนเที่ยงคืน
+    - cron: '0 0 * * *' # ทำงานทุกวันตอนเที่ยงคืน (ตามเวลา UTC)
+
+permissions:
+  contents: write
 
 jobs:
   split_and_commit:
@@ -21,7 +24,7 @@ jobs:
       - name: Split and commit
         run: |
           mkdir -p output
-          split -l 50000 --numeric-suffixes inbound.txt output/part_
+          split -l 100000 --numeric-suffixes inbound.txt output/part_
 
       - name: Commit files
         run: |
@@ -29,9 +32,4 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add output/
           git commit -m "Add new parts from inbound.txt" || echo "No changes to commit"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          git push
