@@ -1,10 +1,17 @@
 **IP Blocklist**
+
 This project provides Split IP blocklists for inbound traffic, updated every 1 hours. It includes exclusions for major public DNS resolvers to prevent legitimate services from being blocked. 
+
+
 **Acknowledgements**
+
 1. ipblocklist : https://github.com/bitwire-it/ipblocklist?tab=readme-ov-file#ip-blocklist
 2. Johan Borestad (foundational blocklists) : https://github.com/borestad
 3. Grok (Code contributions) : https://grok.com/
+
+
 **Data Source**
+
 1. ipblocklist : https://raw.githubusercontent.com/bitwire-it/ipblocklist/refs/heads/main/inbound.txt
 2. borestad/blocklist-abuseipdb : https://github.com/borestad/blocklist-abuseipdb
 3. borestad/firehol-mirror : https://github.com/borestad/firehol-mirror
