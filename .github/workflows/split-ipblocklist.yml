@@ -24,7 +24,7 @@ jobs:
       - name: Split and commit
         run: |
           mkdir -p output
-          split -l 100000 --numeric-suffixes inbound.txt output/part_
+          split -l 100000 --numeric-suffixes inbound.txt output/ipblocklist_part_
 
       - name: Commit files
         run: |
